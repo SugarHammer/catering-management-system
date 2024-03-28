@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zunke.shopmanager.mapper.CartMapper">
+
+    <resultMap type="com.zunke.shopmanager.pojo.Cart" id="cartMap">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="cartNo" column="cart_no" jdbcType="INTEGER"/>
+        <result property="cartAction" column="cart_action" jdbcType="INTEGER"/>
+        <result property="diningId" column="dining_id" jdbcType="INTEGER"/>
+        <result property="mumberId" column="mumber_id" jdbcType="INTEGER"/>
+        <result property="cartPrice" column="cart_price" jdbcType="NUMERIC"/>
+    </resultMap>
+
+    <resultMap type="com.zunke.shopmanager.dto.CartDTO" id="cartDTOMap">
+        <id property="id" column="cid" jdbcType="INTEGER"/>
+        <result property="cartNo" column="cart_no" jdbcType="INTEGER"/>
+        <result property="cartAction" column="cart_action" jdbcType="INTEGER"/>
+        <result property="diningId" column="dining_id" jdbcType="INTEGER"/>
+        <result property="mumberId" column="mumber_id" jdbcType="INTEGER"/>
+        <result property="cartPrice" column="cart_price" jdbcType="NUMERIC"/>
+
+        <collection property="dishesList" ofType="com.zunke.shopmanager.pojo.Dishes" resultMap="com.zunke.shopmanager.mapper.DishesMapper.dishesCartMap" columnPrefix="d_"/>
+        <collection property="cartDishesComboList" ofType="com.zunke.shopmanager.pojo.CartDishesCombo" resultMap="com.zunke.shopmanager.mapper.CartDishesComboMapper.cartDishesComboMap" columnPrefix="cdc_"/>
+        <collection property="comboList" ofType="com.zunke.shopmanager.pojo.Combo" resultMap="com.zunke.shopmanager.mapper.ComboMapper.comboCartMap" columnPrefix="c_"/>
+    </resultMap>
+
+    <resultMap type="com.zunke.shopmanager.dto.SelectByCartId" id="selectByCartId">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="dishesName" column="dishes_name" jdbcType="VARCHAR"/>
+        <result property="dishesNumber" column="dishes_number" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询所有主键和名称-->
+    <select id="selectAll" resultMap="cartMap">
+        select
+        id, cart_no, cart_action, dining_id, mumber_id, cart_price
+        from zunkeu8.cart
+        <where>
+            <if test="cartNo != null">
+                cart_no = #{cartNo},
+            </if>
+            <if test="cartAction != null">
+                cart_action = #{cartAction},
+            </if>
+            <if test="diningId != null">
+                dining_id = #{diningId},
+            </if>
+            <if test="mumberId != null">
+                mumber_id = #{mumberId},
+            </if>
+        </where>
+    </select>
+
+    <!--查询单个-->
+    <select id="selectById" resultMap="cartDTOMap">
+        select c.id as cid, cart_no, cart_action, dining_id, mumber_id, cart_price,
+               cdc.id as cdc_id, cart_id as cdc_cart_id, dishes_id as cdc_dishes_id, combo_id as cdc_combo_id, dishes_number as cdc_dishes_number, combo_number as cdc_combo_number,
+               did as d_did, dishes_no as d_dishes_no, dishes_name as d_dishes_name, dishes_bulk as d_dishes_bulk, dishes_short_code as d_dishes_short_code, dishes_price as d_dishes_price, dishes_photo as d_dishes_photo, dishes_action as d_dishes_action, subcategories_id as d_subcategories_id,
+               c2id as c_c2id, combo_no as c_combo_no, combo_price as c_combo_price, combo_name as c_combo_name, combo_photo as c_combo_photo
+        from zunkeu8.cart c left join (select c1.id, cart_id, dishes_id, combo_id, dishes_number, combo_number,
+                                              d.id as did, dishes_no, dishes_name, dishes_bulk, dishes_short_code, dishes_price, dishes_photo, dishes_action, subcategories_id,
+                                              c2.id as c2id, combo_no, combo_price, combo_name, combo_photo
+                                       from cart_dishes_combo c1 left join dishes d on c1.dishes_id = d.id left join combo c2 on c1.combo_id = c2.id) cdc on c.id = cdc.cart_id
+        where c.id = #{id}
+    </select>
+
+    <!--根据条件查询当前表的满足条件的个数-->
+    <select id="selectForCount" resultType="int">
+        select
+        count(id)
+        from zunkeu8.cart
+        <where>
+            <if test="name != null and name != ''">
+                id like "%"#{name}"%"
+            </if>
+        </where>
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="selectForPage" resultMap="cartMap">
+        select
+        id, cart_no, cart_action, dining_id, mumber_id, cart_price
+        from zunkeu8.cart
+        <where>
+            <if test="name != null and name != ''">
+                id like "%"#{name}"%"
+            </if>
+        </where>
+        limit #{index},#{limit};
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" parameterType="com.zunke.shopmanager.pojo.Cart">
+        insert into zunkeu8.cart(cart_no, dining_id, mumber_id)
+        values (#{cartNo}, #{diningId}, #{mumberId})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="updateById" parameterType="com.zunke.shopmanager.pojo.Cart">
+        update zunkeu8.cart
+        <set>
+            <if test="cartAction != null and cartAction != 0">
+                cart_action = #{cartAction},
+            </if>
+            <if test="diningId != null and diningId != 0">
+                dining_id = #{diningId},
+            </if>
+            <if test="mumberId != null and mumberId != 0">
+                mumber_id = #{mumberId},
+            </if>
+            <if test="cartPrice != null and cartPrice != 0">
+                cart_price = #{cartPrice},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from zunkeu8.cart
+        where id = #{id}
+    </delete>
+
+    <!--通过主键删除-->
+    <select id="selectByDiningIdAndAction" resultMap="cartDTOMap">
+        select c.id as cid, cart_no, cart_action, dining_id, mumber_id, cart_price,
+               cdc.id, cart_id, dishes_id, combo_id, dishes_number, combo_number,
+               did, dishes_no, dishes_name, dishes_bulk, dishes_short_code, dishes_price, dishes_photo, dishes_action, subcategories_id,
+               c2id, combo_no, combo_price, combo_name, combo_photo
+        from zunkeu8.cart c left join (select c1.id, cart_id, dishes_id, combo_id, dishes_number, combo_number,
+                                              d.id as did, dishes_no, dishes_name, dishes_bulk, dishes_short_code, dishes_price, dishes_photo, dishes_action, subcategories_id,
+                                              c2.id as c2id, combo_no, combo_price, combo_name, combo_photo
+        from cart_dishes_combo c1 left join dishes d on c1.dishes_id = d.id left join combo c2 on c1.combo_id = c2.id) cdc on c.id = cdc.cart_id
+        where dining_id = #{diningId} and cart_action = 0
+    </select>
+
+    <!--根据购物车id查询购物车中的菜品-->
+    <select id="selectByCartId" resultMap="selectByCartId">
+        select d.id, dishes_name, dishes_number from dishes d left join cart_dishes_combo cdc on d.id = cdc.dishes_id
+        where cart_id = #{cartId}
+    </select>
+
+</mapper>

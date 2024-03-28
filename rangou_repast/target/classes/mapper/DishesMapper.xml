@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zunke.shopmanager.mapper.DishesMapper">
+
+    <resultMap type="com.zunke.shopmanager.pojo.Dishes" id="dishesMap">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="dishesNo" column="dishes_no" jdbcType="INTEGER"/>
+        <result property="dishesName" column="dishes_name" jdbcType="VARCHAR"/>
+        <result property="dishesBulk" column="dishes_bulk" jdbcType="INTEGER"/>
+        <result property="dishesShortCode" column="dishes_short_code" jdbcType="VARCHAR"/>
+        <result property="dishesPrice" column="dishes_price" jdbcType="NUMERIC"/>
+        <result property="dishesPhoto" column="dishes_photo" jdbcType="VARCHAR"/>
+        <result property="dishesAction" column="dishes_action" jdbcType="INTEGER"/>
+        <result property="unitId" column="unit_id" jdbcType="INTEGER"/>
+        <result property="subcategoriesId" column="subcategories_id" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <resultMap type="com.zunke.shopmanager.pojo.Dishes" id="dishesCartMap">
+        <id property="id" column="did" jdbcType="INTEGER"/>
+        <result property="dishesNo" column="dishes_no" jdbcType="INTEGER"/>
+        <result property="dishesName" column="dishes_name" jdbcType="VARCHAR"/>
+        <result property="dishesBulk" column="dishes_bulk" jdbcType="INTEGER"/>
+        <result property="dishesShortCode" column="dishes_short_code" jdbcType="VARCHAR"/>
+        <result property="dishesPrice" column="dishes_price" jdbcType="NUMERIC"/>
+        <result property="dishesPhoto" column="dishes_photo" jdbcType="VARCHAR"/>
+        <result property="dishesAction" column="dishes_action" jdbcType="INTEGER"/>
+        <result property="unitId" column="unit_id" jdbcType="INTEGER"/>
+        <result property="subcategoriesId" column="subcategories_id" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <resultMap type="com.zunke.shopmanager.dto.DishesDTO" id="dishesDTOMap">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="dishesNo" column="dishes_no" jdbcType="INTEGER"/>
+        <result property="dishesName" column="dishes_name" jdbcType="VARCHAR"/>
+        <result property="dishesBulk" column="dishes_bulk" jdbcType="INTEGER"/>
+        <result property="dishesShortCode" column="dishes_short_code" jdbcType="VARCHAR"/>
+        <result property="dishesPrice" column="dishes_price" jdbcType="NUMERIC"/>
+        <result property="dishesPhoto" column="dishes_photo" jdbcType="VARCHAR"/>
+        <result property="dishesAction" column="dishes_action" jdbcType="INTEGER"/>
+        <result property="unitName" column="unit_name" jdbcType="INTEGER"/>
+        <result property="subcategoriesName" column="subcategories_name" jdbcType="VARCHAR"/>
+        <result property="categoriesName" column="categories_name" jdbcType="VARCHAR"/>
+        <result property="subcategoriesId" column="scid" jdbcType="INTEGER"/>
+        <result property="unitId" column="uid" jdbcType="INTEGER"/>
+        <result property="dishesNumber" column="dishes_number" jdbcType="INTEGER"/>
+        <result property="dishesComboNumber" column="dishes_combo_number" jdbcType="INTEGER"/>
+        <collection property="recipeList" ofType="com.zunke.shopmanager.pojo.Recipe" resultMap="com.zunke.shopmanager.mapper.RecipeMapper.recipeMap"/>
+    </resultMap>
+
+    <!--查询所有主键和名称-->
+    <select id="selectAll" resultMap="dishesDTOMap">
+        select
+        d.id, dishes_no, dishes_name, dishes_bulk, dishes_short_code, dishes_price, dishes_photo, dishes_action,
+        sc.sid as scid, subcategories_name, categories_name,
+        u.id as uid, unit_name
+        from dishes d
+        left join (select s.id as sid, subcategories_name,
+                            categories_name
+        from subcategories s
+        left join categories c on s.categories_id = c.id) sc
+        on sc.sid = d.subcategories_id
+        left join unit u on u.id = d.unit_id
+        <where>
+            <if test="name != null and name != ''">
+                (dishes_name like "%"#{name}"%") or (dishes_short_code like "%"#{name}"%") or (dishes_no  like "%"#{name}"%")
+            </if>
+
+            <if test="dishesAction != 0 or dishesAction == null">
+                and dishes_action = 1
+            </if>
+        </where>
+        limit #{index},#{limit};
+    </select>
+
+
+    <!--查询单个-->
+    <select id="selectById" resultMap="dishesMap">
+        select id,
+               dishes_no,
+               dishes_name,
+               dishes_bulk,
+               dishes_short_code,
+               dishes_price,
+               dishes_photo,
+               unit_id,
+               subcategories_id
+        from zunkeu8.dishes
+        where id = #{id}
+    </select>
+
+    <!--根据条件查询当前表的满足条件的个数-->
+    <select id="selectForCount" resultType="int">
+        select
+        count(d.id)
+        from dishes d
+        left join (select s.id as sid, subcategories_name,
+        categories_name
+        from subcategories s
+        left join categories c on s.categories_id = c.id) sc
+        on sc.sid = d.subcategories_id
+        left join unit u on u.id = d.unit_id
+#         left join (
+#         select dr.id as drid, dishes_id, recipe_id,
+#         r.id as rid, recipe_no, recipe_explain, recipe_type, recipe_markup, recipe_markup_by_amount, recipe_short_code
+#         from dishes_recipe dr
+#         left join recipe r on r.id=dr.recipe_id) drr
+#         on drr.dishes_id=d.id
+        <where>
+            <if test="name != null and name != ''">
+                (dishes_name like "%"#{name}"%") or (dishes_short_code like "%"#{name}"%") or (dishes_no  like "%"#{name}"%")
+            </if>
+
+            <if test="dishesAction != 0 or dishesAction == null">
+                and dishes_action = 1
+            </if>
+        </where>
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="selectForPage" resultMap="dishesMap">
+        select
+        id, dishes_no, dishes_name, dishes_bulk, dishes_short_code, dishes_price, dishes_photo, unit_id,
+        subcategories_id
+        from zunkeu8.dishes
+        <where>
+            <if test="name != null and name != ''">
+                id like "%"#{name}"%"
+            </if>
+        </where>
+        limit #{index},#{limit};
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" parameterType="com.zunke.shopmanager.pojo.Dishes">
+        insert into zunkeu8.dishes(dishes_no, dishes_name, dishes_bulk, dishes_short_code, dishes_price,
+                                   unit_id, subcategories_id)
+        values (#{dishesNo}, #{dishesName}, #{dishesBulk}, #{dishesShortCode}, #{dishesPrice},
+                #{unitId}, #{subcategoriesId})
+    </insert>
+
+    <!--新增所有列-->
+    <insert id="insertDishes" parameterType="com.zunke.shopmanager.pojo.Dishes">
+        insert into zunkeu8.dishes(dishes_no, dishes_name, dishes_bulk, dishes_short_code, dishes_price, dishes_photo,
+                                   unit_id, subcategories_id)
+        values (#{dishesNo}, #{dishesName}, #{dishesBulk}, #{dishesShortCode}, #{dishesPrice}, #{dishesPhoto},
+                #{unitId}, (select id
+                            from subcategories where subcategories_name=#{subcategoriesName}))
+    </insert>
+    
+
+    <!--通过主键修改数据-->
+    <update id="updateById" parameterType="com.zunke.shopmanager.pojo.Dishes">
+        update zunkeu8.dishes
+        <set>
+            <if test="dishesNo != null and dishesName != ''">
+                dishes_no = #{dishesNo},
+            </if>
+            <if test="dishesName != null and dishesName != ''">
+                dishes_name = #{dishesName},
+            </if>
+            <if test="dishesBulk != null and dishesBulk != ''">
+                dishes_bulk = #{dishesBulk},
+            </if>
+            <if test="dishesShortCode != null and dishesShortCode != ''">
+                dishes_short_code = #{dishesShortCode},
+            </if>
+            <if test="dishesPrice != null">
+                dishes_price = #{dishesPrice},
+            </if>
+            <if test="unitId != null and unitId != ''">
+                unit_id = #{unitId},
+            </if>
+            <if test="dishesAction != null">
+                dishes_action = #{dishesAction},
+            </if>
+            <if test="subcategoriesId != null and subcategoriesId != ''">
+                subcategories_id = #{subcategoriesId},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from zunkeu8.dishes
+        where id = #{id}
+    </delete>
+
+    <select id="selectBySubcategoriesId" resultMap="dishesMap">
+        select id,
+               dishes_no,
+               dishes_name,
+               dishes_bulk,
+               dishes_short_code,
+               dishes_price,
+               dishes_photo,
+               unit_id,
+               subcategories_id
+        from zunkeu8.dishes
+        where subcategories_id = #{subcategoriesId}
+    </select>
+    <!--通过主键更新菜品图片-->
+    <delete id="updatePhoto">
+        update dishes set dishes_photo=#{photo} where id=#{id}
+    </delete>
+
+<!--    <select id="selectByCombo" resultMap="">-->
+<!--        select id, dishes_no, dishes_name, dishes_bulk, dishes_short_code, dishes_price, dishes_photo, dishes_action, subcategories_id, unit_id, dcid, dishes_id, combo_id, cid, combo_no, combo_price, unit_id, combo_name from dishes d left join (select dc.id as dcid, dishes_id, combo_id,-->
+<!--                                                 c.id as cid, combo_no, combo_price, unit_id, combo_name-->
+<!--        from dishes_combo dc left join combo c on dc.combo_id = c.id) dcc on d.id = dcc.dishes_id where dcc.cid = #{id}-->
+<!--    </select>-->
+
+    <!--通过套菜查询属于套菜的菜品-->
+    <select id="selectByCombo" resultMap="dishesDTOMap">
+        select
+            d.id, dishes_no, dishes_name, dishes_bulk, dishes_short_code, dishes_price, dishes_photo,dishes_action,
+            sc.id scid, subcategories_name, categories_name,
+            u.id as uid, unit_name,
+            dishes_combo_number
+        from dishes d
+                 left join (select s.id, subcategories_name,
+                                   categories_name
+                            from subcategories s
+                                     left join categories c on s.categories_id = c.id) sc
+                           on sc.id = d.subcategories_id
+                 left join unit u on u.id = d.unit_id
+                            left join (select dc.id as dcid, dishes_id, combo_id, dishes_combo_number,
+                                                                   c.id as cid, combo_no, combo_price, unit_id, combo_name
+                           from dishes_combo dc left join combo c on dc.combo_id = c.id) dcc on d.id = dcc.dishes_id
+        where dcc.cid = #{id}
+    </select>
+    <!--通过套菜查询不属于套菜的菜品-->
+    <select id="selectByNotCombo" resultMap="dishesDTOMap">
+        select
+            d.id, dishes_no, dishes_name, dishes_bulk, dishes_short_code, dishes_price, dishes_photo,dishes_action,
+            sc.id scid, subcategories_name, categories_name,
+            u.id as uid, unit_name,
+            dishes_combo_number
+        from dishes d
+                 left join (select s.id, subcategories_name,
+                                   categories_name
+                            from subcategories s
+                                     left join categories c on s.categories_id = c.id) sc
+                           on sc.id = d.subcategories_id
+                 left join unit u on u.id = d.unit_id
+                            left join (select dc.id as dcid, dishes_id, combo_id, dishes_combo_number,
+                                                                   c.id as cid, combo_no, combo_price, unit_id, combo_name
+                                                            from dishes_combo dc left join combo c on dc.combo_id = c.id) dcc on d.id = dcc.dishes_id
+        where
+<foreach collection="list" item="id" separator="and">
+    d.id != #{id}
+</foreach>
+        group by d.id
+    </select>
+
+    <select id="selectByIds" resultMap="dishesDTOMap">
+        select
+            d.id, dishes_no, dishes_name, dishes_bulk, dishes_short_code, dishes_price, dishes_photo, dishes_action,
+            sc.sid as scid, subcategories_name, categories_name,
+            u.id as uid, unit_name
+        from dishes d
+                 left join (select s.id as sid, subcategories_name,
+                                   categories_name
+                            from subcategories s
+                                     left join categories c on s.categories_id = c.id) sc
+                           on sc.sid = d.subcategories_id
+                 left join unit u on u.id = d.unit_id where
+        <foreach collection="list" item="id" separator="or">
+            d.id = #{id}
+        </foreach>
+    </select>
+
+    <select id="selectByCategories" resultMap="dishesDTOMap">
+        select
+        d.id, dishes_no, dishes_name, dishes_bulk, dishes_short_code, dishes_price, dishes_photo, dishes_action,
+        sc.sid as scid, subcategories_name, categories_name,
+        u.id as uid, unit_name,
+        sc.cid,
+        cdc.id, cart_id, dishes_id, combo_id
+        from dishes d
+        left join (select s.id as sid, subcategories_name,
+        c.id as cid, categories_name
+        from subcategories s
+        left join categories c on s.categories_id = c.id) sc
+        on sc.sid = d.subcategories_id
+        left join unit u on u.id = d.unit_id left join cart_dishes_combo cdc on d.id = cdc.dishes_id where sc.cid = #{categoriesId}
+        and dishes_action = 1
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insertAll" parameterType="com.zunke.shopmanager.pojo.Dishes">
+        insert into zunkeu8.dishes(dishes_no, dishes_name, dishes_short_code, dishes_price, dishes_photo,
+                                   unit_id, subcategories_id)
+        values
+        <foreach collection ="list" item="user" separator =",">
+            (#{user.dishesNo}, #{user.dishesName}, #{user.dishesShortCode}, #{user.dishesPrice}, #{user.dishesPhoto},
+            #{user.unitId}, #{user.subcategoriesId})
+        </foreach>
+    </insert>
+
+
+</mapper>

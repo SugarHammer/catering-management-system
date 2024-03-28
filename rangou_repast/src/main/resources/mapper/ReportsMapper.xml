@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zunke.shopmanager.mapper.ReportsMapper">
+
+    <resultMap type="com.zunke.shopmanager.dto.reportsForDMY.ReportsForDMY" id="ReportsForDMYMap">
+        <result property="bywhen" column="mytime" jdbcType="VARCHAR"/>
+        <result property="ordersNum" column="OrdersNum" jdbcType="INTEGER"/>
+        <result property="ordersSum" column="OrdersSum" jdbcType="INTEGER"/>
+    </resultMap>
+
+
+    <resultMap type="com.zunke.shopmanager.dto.reportsForDMY.MembersRegister" id="MembersRegisterMap">
+        <result property="bywhen" column="mytime" jdbcType="VARCHAR"/>
+        <result property="registerNum" column="registerNum" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--根据条件查询当前表的满足条件的个数-->
+    <select id="selectForDayCount" resultType="int">
+        select
+            count(OrdersNum)
+        from (
+            select
+            Date(pay_date) as mytime,count(id) as OrdersNum,COALESCE(sum(total_price),0) as OrdersSum
+        from zunkeu8.orders
+            GROUP BY substring(pay_date, 1, 10)) a
+    </select>
+    
+    <!--通过实体作为筛选条件查询-->
+    <select id="reportsForDay" resultMap="ReportsForDMYMap">
+        select
+            Date(pay_date) as mytime,count(id) as OrdersNum,COALESCE(sum(total_price),0) as OrdersSum
+        from zunkeu8.orders
+            GROUP BY substring(pay_date, 1, 10)
+        limit #{index},10;
+    </select>
+
+    <!--按月-->
+    <!--根据条件查询当前表的满足条件的个数-->
+    <select id="selectForMouthCount" resultType="int">
+        select
+            count(OrdersNum)
+        from (
+        select
+           DATE_FORMAT(pay_date,'%Y-%m') as mytime, COUNT(id) as OrdersNum ,COALESCE(sum(total_price),0) as OrdersSum
+        from zunkeu8.orders
+            group by substring(pay_date, 1, 8)) a
+    </select>
+
+    <!--按月-->
+    <!--通过实体作为筛选条件查询-->
+    <select id="reportsForMouth" resultMap="ReportsForDMYMap">
+        SELECT
+            DATE_FORMAT(pay_date,'%Y-%m') as mytime, COUNT(id) as OrdersNum ,COALESCE(sum(total_price),0) as OrdersSum
+        FROM zunkeu8.orders
+        GROUP BY substring(pay_date, 1, 7)
+            limit #{index},10;
+    </select>
+
+    <!--根据条件查询当前表的满足条件的个数-->
+    <select id="selectForYearCount" resultType="int">
+        select
+            count(OrdersNum)
+        from (
+        SELECT
+            YEAR(pay_date) as mytime ,COUNT(id) as OrdersNum,COALESCE(sum(total_price),0) as OrdersSum
+        FROM zunkeu8.orders
+        GROUP BY YEAR(pay_date)) a
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="reportsForYear" resultMap="ReportsForDMYMap">
+        SELECT
+            YEAR(pay_date) as mytime ,COUNT(id) as OrdersNum,COALESCE(sum(total_price),0) as OrdersSum
+        FROM zunkeu8.orders
+        GROUP BY YEAR(pay_date)
+        limit #{index},10;
+    </select>
+    <!--营业情况分析-->
+    <select id="selectForReportsByMouth" resultMap="ReportsForDMYMap">
+    select mytime,OrdersNum,OrdersSum
+    from(
+        select substring(pay_date, 1, 10) as mytime,ifnull(count(id),0) as OrdersNum,COALESCE(sum(total_price),0) as OrdersSum
+        from zunkeu8.orders
+        where substring(pay_date, 1, 10) = #{date}
+        group by substring(pay_date, 1, 10)
+        union all
+        select #{date} as mytime,0 as OrdersNum,0 as OrdersSum
+        from dual
+        where (select ifnull(count(id),0) from orders where substring(pay_date, 1, 10) = #{date}) = 0
+    ) a
+    </select>
+
+    <!--会员注册情况分析-->
+    <select id="selectForMembersRegisterByMouth" resultMap="MembersRegisterMap">
+select mytime,registerNum
+from (
+         select COALESCE(Date(mumber_rergistration_time), 0) as mytime, COALESCE(count(id), 0) as registerNum
+         from zunkeu8.mumber
+         where substring(mumber_rergistration_time, 1, 10) = #{date}
+         group by substring(mumber_rergistration_time, 1, 10)
+         union all
+         select #{date} as mytime, 0 as registerNum
+         from dual
+         where (select COALESCE(count(id), 0) from zunkeu8.mumber
+                where substring(mumber_rergistration_time, 1, 10) = #{date}) = 0
+     ) a
+    </select>
+
+</mapper>

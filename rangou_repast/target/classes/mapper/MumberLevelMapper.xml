@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zunke.shopmanager.mapper.MumberLevelMapper">
+
+    <resultMap type="com.zunke.shopmanager.pojo.MumberLevel" id="mumberLevelMap">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="numberLevelName" column="number_level_name" jdbcType="VARCHAR"/>
+        <result property="mumberAddUp" column="mumber_add_up" jdbcType="NUMERIC"/>
+    </resultMap>
+
+    <!--查询所有主键和名称-->
+    <select id="selectAll" resultMap="mumberLevelMap">
+        select
+        id, number_level_name, mumber_add_up
+        from zunkeu8.mumber_level
+        <where>
+            <if test="numberLevelName != null and numberLevelName != ''">
+                and number_level_name = #{numberLevelName}
+            </if>
+            <if test="mumberAddUp != null">
+                and mumber_add_up = #{mumberAddUp}
+            </if>
+        </where>
+    </select>
+
+    <!--查询单个-->
+    <select id="selectById" resultMap="mumberLevelMap">
+        select id,
+               number_level_name,
+               mumber_add_up
+        from zunkeu8.mumber_level
+        where id = #{id}
+    </select>
+
+    <!--根据条件查询当前表的满足条件的个数-->
+    <select id="selectForCount" resultType="int">
+        select
+        count(id)
+        from zunkeu8.mumber_level
+        <where>
+            <if test="name != null and name != ''">
+                mumberLevel_name like "%"#{name}"%"
+            </if>
+        </where>
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="selectForPage" resultMap="mumberLevelMap">
+        select
+        id, number_level_name, mumber_add_up
+        from zunkeu8.mumber_level
+        <where>
+            <if test="name != null and name != ''">
+                mumberLevel_name like "%"#{name}"%"
+            </if>
+        </where>
+        limit #{index},#{limit};
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" parameterType="com.zunke.shopmanager.pojo.MumberLevel">
+        insert into zunkeu8.mumber_level(number_level_name, mumber_add_up)
+        values (#{numberLevelName}, #{mumberAddUp})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="updateById" parameterType="com.zunke.shopmanager.pojo.MumberLevel">
+        update zunkeu8.mumber_level
+        <set>
+            <if test="numberLevelName != null and numberLevelName != ''">
+                number_level_name = #{numberLevelName},
+            </if>
+            <if test="mumberAddUp != null">
+                mumber_add_up = #{mumberAddUp},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from zunkeu8.mumber_level
+        where id = #{id}
+    </delete>
+
+</mapper>

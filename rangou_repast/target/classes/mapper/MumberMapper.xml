@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zunke.shopmanager.mapper.MumberMapper">
+
+    <resultMap type="com.zunke.shopmanager.pojo.Mumber" id="mumberMap">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="mumberName" column="mumber_name" jdbcType="VARCHAR"/>
+        <result property="mumberPhone" column="mumber_phone" jdbcType="VARCHAR"/>
+        <result property="mumberBirthday" column="mumber_birthday" jdbcType="TIMESTAMP"/>
+        <result property="mumberBalance" column="mumber_balance" jdbcType="NUMERIC"/>
+        <result property="mumberTotalCost" column="mumber_total_cost" jdbcType="NUMERIC"/>
+        <result property="mumberIntegral" column="mumber_integral" jdbcType="INTEGER"/>
+        <result property="mumberAction" column="mumber_action" jdbcType="INTEGER"/>
+        <result property="mumberRergistrationTime" column="mumber_rergistration_time" jdbcType="TIMESTAMP"/>
+        <association property="mumberLevel" javaType="com.zunke.shopmanager.pojo.MumberLevel">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="numberLevelName" column="number_level_name" jdbcType="VARCHAR"/>
+        </association>
+    </resultMap>
+
+    <!--查询所有主键和名称-->
+    <select id="selectAll" resultMap="mumberMap">
+        select
+            m.id,m.mumber_name,m.mumber_phone,m.mumber_birthday,m.mumber_balance,m.mumber_total_cost,m.mumber_integral,ml.number_level_name,m.mumber_action,m.mumber_rergistration_time
+        from zunkeu8.mumber m
+        left join zunkeu8.mumber_level ml on m.mumber_level_id= ml.id
+        <where>
+            <if test="mumberName != null and mumberName != ''">
+                and mumber_name like '%'#{mumberName}'%'
+            </if>
+<!--            <if test="mumberPhone != null and mumberPhone != ''">-->
+<!--                and mumber_phone = #{mumberPhone}-->
+<!--            </if>-->
+<!--            <if test="mumberBirthday != null">-->
+<!--                and mumber_birthday = #{mumberBirthday}-->
+<!--            </if>-->
+<!--            <if test="mumberBalance != null">-->
+<!--                and mumber_balance = #{mumberBalance}-->
+<!--            </if>-->
+<!--            <if test="mumberTotalCost != null">-->
+<!--                and mumber_total_cost = #{mumberTotalCost}-->
+<!--            </if>-->
+<!--            <if test="mumberIntegral != null">-->
+<!--                and mumber_integral = #{mumberIntegral}-->
+<!--            </if>-->
+<!--            <if test="levelId!= null">-->
+<!--                and level_id = #{levelId}-->
+<!--            </if>-->
+<!--            <if test="mumberAction != null">-->
+<!--                and mumber_action = #{mumberAction}-->
+<!--            </if>-->
+<!--            <if test="mumberRergistrationTime != null">-->
+<!--                and mumber_rergistration_time = #{mumberRergistrationTime}-->
+<!--            </if>-->
+
+        </where>
+    </select>
+
+    <!--查询单个-->
+    <select id="selectById" resultMap="mumberMap">
+        select id,
+               mumber_name,
+               mumber_phone,
+               mumber_password,
+               mumber_birthday,
+               mumber_balance,
+               mumber_total_cost,
+               mumber_integral,
+               mumber_level_id,
+               mumber_action,
+               mumber_rergistration_time,
+               mumber_head_img,
+               mumber_uuid,
+               role_id,
+               phone_code,
+               send_time
+        from zunkeu8.mumber
+        where id = #{id}
+    </select>
+
+    <!--根据电话号码查询-->
+    <select id="selectByPhone" resultMap="mumberMap">
+        select id,
+               mumber_name,
+               mumber_phone,
+               mumber_password,
+               mumber_birthday,
+               mumber_balance,
+               mumber_total_cost,
+               mumber_integral,
+               mumber_level_id,
+               mumber_action,
+               mumber_rergistration_time,
+               mumber_head_img,
+               mumber_uuid,
+               role_id,
+               phone_code,
+               send_time
+        from zunkeu8.mumber
+        where mumber_phone = #{phone} and mumber_action !=0
+    </select>
+    <!--根据条件查询当前表的满足条件的个数-->
+    <select id="selectForCount" resultType="int">
+        select
+        count(id)
+        from zunkeu8.mumber where  mumber_action =1 and role_id = 0
+        <where>
+            <if test="name != null and name != ''">
+                mumber_name like "%"#{name}"%"
+            </if>
+        </where>
+    </select>
+    <select id="selectTodayRegisterPerson" resultType="int">
+        select
+        count(id)
+        from zunkeu8.mumber
+        <where>
+            mumber_rergistration_time &gt; #{time}
+        </where>
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="selectForPage" resultMap="mumberMap">
+        select
+        m.id,m.mumber_name,m.mumber_phone,m.mumber_birthday,m.mumber_balance,m.mumber_total_cost,m.mumber_integral,ml.number_level_name,m.mumber_action,m.mumber_rergistration_time
+        from (select * from zunkeu8.mumber where mumber_action =1 and role_id = 0) m
+        left join zunkeu8.mumber_level ml on  m.mumber_level_id = ml.id
+        <where>
+            <if test="name != null and name != ''">
+                mumber_name like "%"#{name}"%"
+            </if>
+        </where>
+
+        limit #{index},#{limit};
+    </select>
+    <!--查询每月/天的注册人数-->
+    <select id="selectRegisterNumber" resultType="com.zunke.shopmanager.dto.RegisterNumber">
+        select count(id) as id,role_id as roleId,substring( mumber_rergistration_time ,1 , 7 ) as rergistrationTime
+        from zunkeu8.mumber WHERE role_id = 0
+        group by substring( mumber_rergistration_time ,1 , 7 )
+    </select>
+
+
+    <!--新增所有列-->
+    <insert id="insert" parameterType="com.zunke.shopmanager.pojo.Mumber">
+        insert into zunkeu8.mumber
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="mumberName != null and mumberName != ''">
+                mumber_name,
+            </if>
+            <if test="mumberPhone != null and mumberPhone !=''">
+                mumber_phone,
+            </if>
+            <if test="mumberBalance != null and mumberBalance != ''">
+                mumber_balance,
+            </if>
+            <if test="mumberIntegral != null and mumberIntegral != ''">
+                mumber_integral,
+            </if>
+            <if test="mumberRergistrationTime != null">
+                mumber_rergistration_time,
+            </if>
+            <if test="roleId != null ">
+                role_id,
+            </if>
+        </trim>
+    values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="mumberName != null and mumberName != ''">
+                #{mumberName},
+            </if>
+            <if test="mumberPhone != null and mumberPhone !=''">
+                #{mumberPhone},
+            </if>
+            <if test="mumberBalance != null ">
+                #{mumberBalance},
+            </if>
+            <if test="mumberIntegral != null and mumberIntegral != ''">
+                #{mumberIntegral},
+            </if>
+            <if test="mumberRergistrationTime != null">
+                #{mumberRergistrationTime},
+            </if>
+            <if test="roleId != null ">
+                #{roleId},
+            </if>
+        </trim>
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="updateById" parameterType="com.zunke.shopmanager.pojo.Mumber">
+        update zunkeu8.mumber
+        <set>
+            <if test="mumberName != null and mumberName != ''">
+                mumber_name = #{mumberName},
+            </if>
+            <if test="mumberPhone != null and mumberPhone != ''">
+                mumber_phone = #{mumberPhone},
+            </if>
+            <if test="mumberPassword != null and mumberPassword != ''">
+                mumber_password = #{mumberPassword},
+            </if>
+            <if test="mumberBirthday != null">
+                mumber_birthday = #{mumberBirthday},
+            </if>
+            <if test="mumberBalance != null">
+                mumber_balance = #{mumberBalance},
+            </if>
+            <if test="mumberIntegral != null">
+                mumber_integral = #{mumberIntegral},
+            </if>
+            <if test="levelId != null">
+                level_id = #{levelId},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        update zunkeu8.mumber set mumber_action = 0
+
+        where id = #{id}
+    </delete>
+
+</mapper>

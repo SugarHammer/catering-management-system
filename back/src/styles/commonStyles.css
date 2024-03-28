@@ -1,0 +1,69 @@
+.btnsBar {
+  background-color: white;
+  padding: 20px;
+  margin: 0 0 10px 0 !important;
+  height: 70px;
+}
+
+.paginationBar {
+  float: right;
+  margin: 10px 20px 0 0;
+}
+
+.tableBox {
+  background-color: white;
+  padding: 20px;
+}
+
+.clear {
+  clear: both;
+}
+
+.el-dialog .el-input {
+  width: 400px;
+}
+
+#delBtn, #delComboDishesBtn, #delWayBtn, .delBtn {
+  color: #f56c6c;
+  background-color: white;
+  border-color: #F56C6C;
+}
+
+#editBtn, #editNumBtn, #editWayBtn, .editBtn {
+  background-color: white;
+  border: 1px solid #0DC316;
+  color: #0DC316;
+}
+
+#delBtn:hover,
+#delComboDishesBtn:hover,
+#delWayBtn:hover,
+.delBtn:hover {
+  background-color: rgba(245, 108, 108, .1);
+  border-color: #F56C6C;
+  color: #F56C6C;
+}
+
+#editBtn:hover,
+#editNumBtn:hover,
+#editWayBtn:hover,
+.editBtn:hover {
+  background-color: rgba(13, 195, 22, .1);
+  border: 1px solid #0DC316;
+  color: #0DC316;
+}
+
+#detailBtn {
+  background-color: white;
+  border: 1px solid #ff9900;
+  color: #ff9900;
+}
+
+#detailBtn:hover {
+  background-color: rgba(255, 153, 0, .1);
+  border: 1px solid #ff9900;
+}
+
+.addBtn {
+  float: left;
+}

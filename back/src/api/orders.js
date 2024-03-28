@@ -1,0 +1,31 @@
+export default {
+    //this.$api.orders.GetOrders,{params:{limit:10,page: this.currentPage}}
+    //һ������ҳ��
+    //1.���������
+    TableNo:'/api/dining/selectAll',
+    //2.��ȡ���������б�
+    GetOrders:'/api/orders/selectForPage',
+    //3.ȷ���޸�
+    Edit:'/api/orders/updateDiningAndInfoById',
+    //4.ɾ��
+    Del:'/api/orders/deleteById',
+    //5.����
+    Search:'/api/orders/selectForPage',
+    //6.��ȡ�������������б�
+    GetDetails:'/api/orders/selectByOrdersId',
+    //7.����ɾ��
+    DelAny:'/api/orders/deleteAllById',
+    //8.������в�����
+    FreeTableNo:'/api/dining/selectForPage',
+    //9.���
+    AddOrder:'/api/orders/insert',
+    //��������ҳ��
+    //1.�޸Ĳ�Ʒ����
+    EditDish:'/api/orders/updateDishInfoById',
+    //2.�޸��ײ�����
+    EditCombo:'/api/orders/updateComboInfoById',
+    //3.ɾ����Ʒ
+    DelDish:'/api/orders/delectDishInfoById',
+    //4.ɾ���ײ�
+    DelCombo:'/api/orders/delectComboInfoById',
+}
