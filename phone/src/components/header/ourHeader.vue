@@ -2,7 +2,7 @@
   <div class="header">
     <div class="logo">
       <el-image :src="imgUrl" style="width: 35px; height: 35px; display:inline-block;vertical-align:middle;"></el-image>
-      <span style="margin-left:5px">然狗餐饮</span>
+      <span style="margin-left:5px">餐饮管理</span>
     </div>
 
   </div>

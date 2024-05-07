@@ -9,7 +9,7 @@
       <el-input v-model="userPhone" placeholder="请输入手机号" maxlength="11"
                 oninput="value=value.replace(/[^\d]/g,'')"></el-input>
     </div>
-    <p>未注册手机号验证后自动创建然狗餐饮会员账户</p>
+    <p>未注册手机号验证后自动创建餐饮会员账户</p>
     <div>
       <router-link :to="{path:'PhoneCode',query:{userPhone:this.userPhone}}">
         <el-button :disabled=disabled @click="getPhoneCode">获取短信验证</el-button>

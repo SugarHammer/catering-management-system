@@ -105,7 +105,7 @@
           </li>
 
           <li>
-            关于然狗餐饮
+            关于餐饮系统
             <div class="el-icon-arrow-right">
             </div>
           </li>

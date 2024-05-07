@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="ON">
+    <appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+
+        <!--
+        目前的log4j2版本需要指定完整的物理路径，才能生成日志文件
+        ${web:rootDir}是获取当前项目的物理路径位置，需要下面的监听器支持(添加到web.xml中)
+        <listener>
+            <listener-class>org.apache.logging.log4j.web.Log4jServletContextListener</listener-class>
+         </listener>
+
+         上述监听器需要log4j-web驱动支持
+         <dependency>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-web</artifactId>
+          <version>2.11.1</version>
+        </dependency>
+        -->
+        <RollingFile name="RollingFile" fileName="${web:rootDir}/logs/app.log"
+                     filePattern="${web:rootDir}/logs/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy.MM.dd 'at' HH:mm:ss z} %-5level %class{36} %L %M - %msg%xEx%n"/>
+            <SizeBasedTriggeringPolicy size="5 MB" />
+        </RollingFile>
+    </appenders>
+    <loggers>
+        <root level="DEBUG">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="RollingFile"/>
+        </root>
+    </loggers>
+</configuration>
+

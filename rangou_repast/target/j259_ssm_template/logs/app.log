@@ -567,3 +567,5 @@ Caused by: java.net.ConnectException: Connection timed out: connect
 2024.03.28 at 10:56:18 CST DEBUG com.alibaba.druid.support.logging.Log4j2Impl 63 debug - skip not validate connection.
 2024.03.28 at 10:56:18 CST DEBUG com.alibaba.druid.support.logging.Log4j2Impl 63 debug - skip not validate connection.
 2024.03.28 at 11:02:13 CST DEBUG com.alibaba.druid.support.logging.Log4j2Impl 63 debug - skip not validate connection.
+2024.05.07 at 18:08:34 CST INFO  com.alibaba.druid.support.logging.Log4j2Impl 106 info - {dataSource-1} inited
+2024.05.07 at 18:13:08 CST DEBUG com.alibaba.druid.support.logging.Log4j2Impl 63 debug - skip not validate connection.

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zunke.shopmanager.mapper.RoleMapper">
+
+    <resultMap type="com.zunke.shopmanager.pojo.Role" id="RoleMapper">
+        <id property="id" column="rid" jdbcType="INTEGER"/>
+        <result property="roleName" column="role_name" jdbcType="VARCHAR"/>
+        <result property="permissionId" column="permission_id" jdbcType="INTEGER"/>
+        <collection property="mumberRoleList" ofType="com.zunke.shopmanager.dto.MumberRole">
+            <id property="id" column="mid" jdbcType="INTEGER"/>
+            <result property="mumberName" column="mumber_name" jdbcType="VARCHAR"/>
+            <result property="mumberPhone" column="mumber_phone" jdbcType="VARCHAR"/>
+            <result property="mumberPassword" column="mumber_password" jdbcType="VARCHAR"/>
+            <result property="roleId" column="role_id" jdbcType="INTEGER"/>
+            <collection property="permissionList" ofType="com.zunke.shopmanager.pojo.Permission">
+                <id property="id" column="pid" jdbcType="INTEGER"/>
+                <result property="permissionName" column="permission_name" jdbcType="VARCHAR"/>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <!--新增所有列-->
+    <insert id="insert" parameterType="com.zunke.shopmanager.dto.MumberRole">
+        insert into zunkeu8.mumber(mumber_name,mumber_phone,mumber_password,role_id)
+        values (#{mumberName},#{mumberPhone},#{mumberPassword},#{roleId})
+    </insert>
+
+
+    <!--角色名查询-->
+    <select id="selectById" resultMap="RoleMapper">
+        select
+            m.id as mid,mumber_name,mumber_phone,mumber_password,
+            role_name,
+            permission_name
+        from
+            (mumber m
+                left join role r on m.role_id = r.id)
+                left join permission p on permission_id = p.id
+        where
+              m.id = #{id}
+    </select>
+
+<!--    全查管理员和维护员  暂时没用到-->
+    <select id="selectAll" resultMap="RoleMapper">
+        select
+            m.id as mid,mumber_name,mumber_phone,mumber_password,
+            r.id as rid,role_name,
+            p.id as pid,permission_name
+        from
+            (mumber m
+                left join role r on m.role_id = r.id)
+                left join permission p on m.id = p.id
+        where role_id = 2 or role_id = 3
+    </select>
+
+
+    <!--    修改用户角色-->
+    <update id="updateRole" parameterType="com.zunke.shopmanager.dto.MumberRole">
+        update
+            zunkeu8.mumber
+        set
+            role_id = #{roleId}
+        where
+            id = #{id}
+    </update>
+
+
+
+<!--    修改角色权限-->
+    <update id="updateByName" parameterType="com.zunke.shopmanager.pojo.Role">
+        update
+            zunkeu8.role
+        set
+            permission_id = #{permissionId}
+        where
+            role_name = #{roleName}
+    </update>
+
+
+    <!--    修改用户的资料-->
+    <update id="updateByMumber" parameterType="com.zunke.shopmanager.dto.MumberRole">
+        update
+            zunkeu8.mumber
+        <set>
+            <if test="mumberName != null">
+                mumber_name = #{mumberName},
+            </if>
+            <if test="mumberPhone != null">
+                mumber_phone = #{mumberPhone},
+            </if>
+            <if test="mumberPassword != null">
+                mumber_password = #{mumberPassword}
+            </if>
+        </set>
+        where
+            id = #{id}
+    </update>
+
+
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from zunkeu8.mumber where id = #{id}
+    </delete>
+
+
+    <!--根据条件查询当前表的满足条件的个数-->
+    <select id="selectForCount" resultType="java.lang.Integer">
+        select
+        count(m.id)
+        from (mumber m
+        left join role r on m.role_id = r.id)
+        left join permission p on m.id = p.id
+        where (role_id = 2 or role_id = 3)
+            <if test="roleName != null and roleName != ''">
+                 and role_name like "%"#{roleName}"%"
+            </if>
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="selectForPage" resultMap="RoleMapper">
+        select
+        m.id as mid,mumber_name,mumber_phone,mumber_password,
+        r.id as rid,role_name,
+        p.id as pid,permission_name
+        from
+        (mumber m
+        left join role r on m.role_id = r.id)
+        left join permission p on m.id = p.id
+        where (role_id = 2 or role_id = 3)
+        <if test="roleName != null and roleName != ''">
+            and role_name like "%"#{roleName}"%"
+        </if>
+        limit #{index},10;
+    </select>
+</mapper>

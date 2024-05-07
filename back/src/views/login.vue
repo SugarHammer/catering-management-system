@@ -2,12 +2,12 @@
   <el-container class="login-box">
     <el-main>
       <!--    背景图-->
-      <img src="./../assets/2.jpeg" alt="#">
+      <img src="./../assets/3.png" alt="#">
       <div class="masking"></div>
       <!--    登陆框-->
       <div class="login-box">
-        <h1 class="login-title">然狗餐饮后台管理系统</h1>
-        <h5 class="login-subtitle">RANHOU CATERING SYSTEM</h5>
+        <h1 class="login-title">餐饮管理系统后台</h1>
+        <h5 class="login-subtitle">CATERING SYSTEM</h5>
         <el-tabs v-if="notForget" v-model="activeName" type="border-card" :stretch="true">
           <el-tab-pane label="用户名密码登录" name="pwd">
             <loginByPwd @forget="switchForget"></loginByPwd>
@@ -23,7 +23,7 @@
     </el-main>
     <!--    尾部-->
     <el-footer>
-     
+
     </el-footer>
   </el-container>
 </template>

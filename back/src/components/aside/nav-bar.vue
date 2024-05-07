@@ -10,7 +10,7 @@
       <el-menu-item class="logo-box">
         <div class="logo"></div>
         <span slot="title">
-          然狗餐饮
+          餐饮管理
         </span>
       </el-menu-item>
       <el-submenu index="dishes">
