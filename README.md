@@ -1,4 +1,4 @@
-# 餐饮管理系统
+# 餐饮管理系统(数据库加VX获取☟)
 
 #### 介绍
 云服务餐饮管理系统（ssm+Vue）
@@ -23,7 +23,7 @@ Java + SSM + Vue + Mysql
 #### 功能流程图
 ![输入图片说明](photo/%E5%AE%9E%E4%BD%93&%E5%8A%9F%E8%83%BD%E5%9B%BE.gif)
 
-### 演示截图
+### 部分功能演示
 #### 后台登录
 ![输入图片说明](photo/%E5%90%8E%E5%8F%B0%E7%99%BB%E5%BD%95.gif)
 
@@ -44,7 +44,7 @@ Java + SSM + Vue + Mysql
 
 
 
-### 环境需求
+### 环境需求(可免费提供)
 - idea/eclipse、jdk-1.8、maven-3.8.6、mysql、node.js
 
 
