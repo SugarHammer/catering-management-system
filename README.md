@@ -1,11 +1,11 @@
-# 云服务餐饮管理系统
+# 餐饮管理系统
 
 #### 介绍
-云服务餐饮管理系统（ssm+两端口Vue）
+云服务餐饮管理系统（ssm+Vue）
 有BUG可留言加微
 
 #### 软件架构
-SSM + Vue + Mysql
+Java + SSM + Vue + Mysql
 
 
 #### 项目说明
@@ -42,18 +42,11 @@ SSM + Vue + Mysql
 #### 用户移动端
 ![输入图片说明](photo/%E7%94%A8%E6%88%B7%E6%89%8B%E6%9C%BA%E7%AB%AF.gif)
 
-#### 代码&数据库
-![输入图片说明](photo/%E4%BB%A3%E7%A0%81%E6%95%B0%E6%8D%AE%E5%BA%93.gif)
 
 
 ### 环境需求
 - idea/eclipse、jdk-1.8、maven-3.8.6、mysql、node.js
 
-### 项目支持
-- 项目的发展，离不开大家得支持~！~
-- 也可以请作者喝一杯咖啡:)
-![输入图片说明](photo/0-%E5%BE%AE%E4%BF%A1_2.png)
-![输入图片说明](photo/0-%E6%94%AF%E4%BB%98%E5%AE%9D_2.png)
 
 ## 有项目修改、安装调试需求 请联系微信
 ![输入图片说明](photo/0-WeChat.png)
